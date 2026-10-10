@@ -19,6 +19,7 @@ class ArmSortingTask(ArmStackingTask):
     """Reuse the arm's Cartesian motor control with a feedback-driven state machine."""
 
     clearance = 0.34
+    stall_timeout = 20.0
 
     def __init__(self, model, data, joints, seed):
         self.seed = seed
@@ -46,6 +47,8 @@ class ArmSortingTask(ArmStackingTask):
         self.source = np.zeros(3)
         self.carry_offset = np.zeros(3)
         self.empty_since = None
+        self.batch = 1
+        self.last_progress = data.time
         for _ in range(3):
             self.add_block()
 
@@ -113,6 +116,7 @@ class ArmSortingTask(ArmStackingTask):
         self.active.add(index)
         self.added += 1
         self.empty_since = None
+        self.last_progress = self.data.time
         return True
 
     def move_block(self):
@@ -130,6 +134,7 @@ class ArmSortingTask(ArmStackingTask):
         if position is None:
             return False
         self._place_object(index, position, self.rng.uniform(-np.pi / 4, np.pi / 4))
+        self.last_progress = self.data.time
         if index == self.target:
             self._track(index)
             self.replans += 1
@@ -172,6 +177,27 @@ class ArmSortingTask(ArmStackingTask):
         goal[2] = self.clearance
         self._begin("Recovering", goal, 0.65)
 
+    def _refresh(self):
+        # Release/retract first; recycle the scene only once the jaws are clear.
+        self.opening = OPEN
+        self.target = None
+        self._begin("New batch", [*self.command_position[:2], self.clearance], 0.65)
+
+    def _refill(self):
+        for index in list(self.active):
+            self.model.geom_contype[self.block_geoms[index]] = 0
+            self.model.geom_conaffinity[self.block_geoms[index]] = 0
+            self._place_object(index, [0, 0, -1], 0)
+        self.active.clear()
+        self.parked.clear()
+        self.retry_after.clear()
+        self.empty_since = None
+        self.last_progress = self.data.time
+        self.batch += 1
+        for _ in range(3):
+            self.add_block()
+        self._begin("Looking")
+
     def _choose(self):
         palm = self.data.body("gripper_carrier").xpos
         occupied = {i % 3 for i in self.parked}
@@ -205,17 +231,22 @@ class ArmSortingTask(ArmStackingTask):
                 self.model.geom_contype[self.block_geoms[index]] = 0
                 self.model.geom_conaffinity[self.block_geoms[index]] = 0
                 self._place_object(index, [0, 0, -1], 0)
-        # Keep the unattended hook alive; replenish only once the whole batch clears.
-        if not self.active:
+        # Loop finished batches and recover from stranded objects or repeated
+        # unsuccessful attempts. This runs on simulation time, so manual pause
+        # freezes the watchdog as well as the physics.
+        if not self.active and self.phase != "New batch":
             if self.empty_since is None:
                 self.empty_since = now
             if now - self.empty_since > 1.5:
-                for _ in range(3):
-                    self.add_block()
+                self._refresh()
+        if self.phase != "New batch" and now - self.last_progress > self.stall_timeout:
+            self._refresh()
         if self.phase == "Looking":
             target = self._choose()
             if target is not None:
                 self._track(target)
+            elif self.active and now - self.since > 3.0:
+                self._refresh()
         if self.target is not None and self.phase in ("Tracking", "Aligning", "Grasping"):
             position, yaw = self._pose(self.target)
             shift = np.linalg.norm(position[:2] - self.source[:2])
@@ -270,6 +301,7 @@ class ArmSortingTask(ArmStackingTask):
                 and self._speed(self.target) < 0.05
             ):
                 self.sorted += 1
+                self.last_progress = now
                 self.parked[self.target] = now + 1.0
                 self._begin("Retracting", [*palm[:2], self.clearance], 0.55)
             else:
@@ -279,6 +311,8 @@ class ArmSortingTask(ArmStackingTask):
             self._begin("Looking")
         elif self.phase == "Replanning":
             self._track(self.target)
+        elif self.phase == "New batch":
+            self._refill()
 
     def state(self):
         carrying = self.phase in ("Lifting", "Sorting", "Placing", "Releasing", "Checking")
@@ -289,6 +323,7 @@ class ArmSortingTask(ArmStackingTask):
             "retries": self.retries,
             "replans": self.replans,
             "seed": self.seed,
+            "batch": self.batch,
             "target": SORT_BLOCKS[self.target] if self.target is not None else None,
             "active": sorted(self.active),
             "can_add": len(self.active) < len(SORT_BLOCKS),

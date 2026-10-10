@@ -89,14 +89,30 @@ test('home arm sorts randomized blocks and adapts to live scene edits', async ({
   await page.waitForTimeout(150);
   expect(frame!.time).toBe(finished);
 });
-test('reduced-motion home demo starts paused and resumes on request', async ({ page }) => {
+test('home autoplays even with reduced motion and respects manual pause', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await expect(page.locator('#hero-status')).toHaveText('Paused');
-  await expect(page.locator('#hero-task-phase')).toHaveText('Looking');
-  await page.locator('#hero-pause').click();
   await expect(page.locator('#hero-status')).toHaveText('Live simulation');
   await expect(page.locator('#hero-task-phase')).not.toHaveText('Looking');
+  await page.locator('#hero-pause').click();
+  await expect(page.locator('#hero-status')).toHaveText('Paused');
+  const stopped = await page.locator('#hero-clock').innerText();
+  await page.waitForTimeout(1000);
+  await expect(page.locator('#hero-clock')).toHaveText(stopped);
+  await page.locator('#hero-pause').click();
+  await expect(page.locator('#hero-status')).toHaveText('Live simulation');
+  await expect(page.locator('#hero-clock')).not.toHaveText(stopped);
+});
+
+test('home automatically loops into another randomized batch', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#hero-status')).toHaveText('Live simulation');
+  await expect
+    .poll(async () => parseInt(await page.locator('#hero-sort-count').innerText()), {
+      timeout: 40000,
+    })
+    .toBeGreaterThanOrEqual(4);
+  await expect(page.locator('#hero-status')).toHaveText('Live simulation');
 });
 test('roadmap pan, zoom, node dragging, progress, stars, filters and persistence', async ({
   page,

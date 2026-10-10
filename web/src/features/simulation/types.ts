@@ -33,6 +33,7 @@ export interface StateMessage {
     retries?: number;
     replans?: number;
     seed?: number;
+    batch?: number;
     target?: string | null;
     active?: number[];
     can_add?: boolean;

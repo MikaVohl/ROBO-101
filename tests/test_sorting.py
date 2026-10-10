@@ -113,3 +113,23 @@ def test_add_and_move_pool_limits_and_visibility():
     assert np.linalg.norm(task._pose(target)[0] - before) >= 0.10
     assert task.replans == 1
     until(sim, lambda: task.sorted >= 1, seconds=15)
+
+
+def test_stranded_batch_refreshes_and_resumes_sorting():
+    sim = Simulation("sorting", seed=4)
+    task = sim.gripper_task
+    for index in task.active:
+        task._place_object(index, [-0.8, -0.5, 0.03], 0)
+    until(sim, lambda: task.batch == 2, seconds=5)
+    assert task.sorted == 0
+    assert len(task.active) == 3
+    until(sim, lambda: task.sorted >= 1)
+
+
+def test_repeated_misses_refresh_the_batch_instead_of_looping_forever():
+    sim = Simulation("sorting", seed=9)
+    task = sim.gripper_task
+    advance(sim, task.stall_timeout + 1.0, open_jaws=True)
+    assert task.batch >= 2
+    assert task.sorted == 0
+    until(sim, lambda: task.sorted >= 1)

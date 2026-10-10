@@ -165,8 +165,10 @@ the reported `task.seed` reproduces a layout via `Simulation("sorting", seed=42)
 WebSocket scene command with `"seed": 42`. Replaying the same interaction sequence at
 the same simulation steps is reproducible in the same environment.
 
-Pause freezes the task, and camera orbit/zoom remain interactive. Reduced-motion
-users start paused and can resume explicitly. Edit `sorting_scene.xml` and
+The home demo autoplays, replenishes completed batches, and refreshes a stalled
+batch when objects become unreachable or repeated grasps fail. Manual pause
+freezes both the task and its recovery timers; camera orbit/zoom remain interactive.
+Edit `sorting_scene.xml` and
 `arm_sorting.py` to change the home demo. The original scripted arm and isolated
 gripper stacking tasks remain available as `uv run robo stacking --demo` and
 `uv run robo gripper --demo`; the arm/rover playground is at `/lab`.

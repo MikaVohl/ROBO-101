@@ -7,11 +7,13 @@ export function useSimulation(container: RefObject<HTMLDivElement | null>, showc
   const socket = useRef<WebSocket | null>(null);
   const viewer = useRef<RobotViewport | null>(null);
   const latest = useRef<StateMessage | null>(null);
+  const manuallyPaused = useRef(false);
   const [model, setModel] = useState<ModelMessage | null>(null);
   const [frame, setFrame] = useState<StateMessage | null>(null);
   const [connection, setConnection] = useState('Connecting…');
   const [error, setError] = useState('');
   const send = useCallback((command: SimulationCommand) => {
+    if (command.action === 'pause') manuallyPaused.current = command.enabled;
     if (socket.current?.readyState === WebSocket.OPEN) {
       setError('');
       socket.current.send(JSON.stringify(command));
@@ -44,9 +46,7 @@ export function useSimulation(container: RefObject<HTMLDivElement | null>, showc
         if (showcase) {
           send({ action: 'scene', scene: 'sorting' });
           send({ action: 'demo', enabled: true });
-          if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            send({ action: 'pause', enabled: true });
-          }
+          send({ action: 'pause', enabled: manuallyPaused.current });
         }
       };
       ws.onmessage = (event) => {
