@@ -1,0 +1,4 @@
+<mujoco model="ROBO-101 · Rover Arena">
+  <include file="environment.xml"/>
+  <include file="car.xml"/>
+</mujoco>

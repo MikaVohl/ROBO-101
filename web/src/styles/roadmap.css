@@ -1,0 +1,769 @@
+body[data-page='roadmap'] {
+  height: 100dvh;
+  overflow: hidden;
+}
+.canvas-page {
+  position: relative;
+  height: calc(100dvh - 56px);
+  overflow: hidden;
+}
+#roadmap-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  background-color: #1d1c1e;
+  background-image: radial-gradient(circle, #343237 1px, transparent 1px);
+  background-size: 22px 22px;
+  outline: none;
+}
+#roadmap-canvas.panning,
+#roadmap-canvas.dragging-node {
+  cursor: grabbing;
+}
+#roadmap-canvas:focus-visible {
+  box-shadow: inset 0 0 0 2px #615ff877;
+}
+#roadmap-world {
+  position: absolute;
+  width: 1200px;
+  height: 810px;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+#lesson-graph {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+#roadmap-edges path {
+  stroke: #636168;
+  stroke-width: 2.4;
+  fill: none;
+  opacity: 0.8;
+}
+#roadmap-edges path.support-edge {
+  stroke-dasharray: 8 8;
+  opacity: 0.6;
+}
+.roadmap-node {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #555376;
+  border: 1px solid #62607f;
+  border-radius: 6px;
+  color: #fff;
+  padding: 10px 12px 21px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px #00000024;
+  user-select: none;
+  touch-action: none;
+}
+.roadmap-node:hover {
+  background: #625e86;
+  border-color: #8c87aa;
+}
+.roadmap-node.selected {
+  outline: 2px solid #bbb5ec;
+  outline-offset: 3px;
+}
+.roadmap-node.completed {
+  background: #285d4d;
+  border-color: #388269;
+}
+.roadmap-node.completed:hover {
+  background: #306b58;
+}
+.roadmap-node h3 {
+  font-family: var(--font);
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+  pointer-events: none;
+}
+.node-progress {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  height: 4px;
+  bottom: 9px;
+  background: #eeedf2;
+  border-radius: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.node-progress i {
+  display: block;
+  background: #00d3a3;
+  height: 100%;
+  width: 0;
+  transition: width 0.2s;
+}
+.node-star {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  color: #f5bc43;
+  font-size: 15px;
+  pointer-events: none;
+}
+.node-complete-icon {
+  position: absolute;
+  left: 5px;
+  top: 4px;
+  font-size: 12px;
+  color: #b8ead9;
+  pointer-events: none;
+}
+.canvas-controls {
+  position: absolute;
+  left: 16px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #353338;
+  border-radius: 13px;
+  overflow: hidden;
+  background: #1c1b1de8;
+  z-index: 3;
+  box-shadow: 0 3px 12px #0002;
+}
+.canvas-controls button {
+  border: 0;
+  border-bottom: 1px solid #353338;
+  background: none;
+  color: #bdbbc3;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+.canvas-controls button:last-child {
+  border-bottom: 0;
+}
+.canvas-controls button:hover {
+  background: #313035;
+}
+.canvas-controls svg {
+  width: 19px;
+  height: 19px;
+}
+.progress-overlay {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  width: 310px;
+  max-height: calc(100% - 40px);
+  overflow: auto;
+  z-index: 4;
+  scrollbar-width: thin;
+  scrollbar-color: #454349 transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.progress-card,
+.activity-card {
+  background: #262527;
+  border: 1px solid #3b3a3d;
+  border-radius: 16px;
+  box-shadow: 0 3px 12px #0001;
+  padding: 24px 20px;
+}
+.progress-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.progress-counts {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex: 1;
+}
+.progress-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+}
+.progress-count-row strong {
+  font-weight: 600;
+}
+.progress-count-row span {
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #b6b4ba;
+  white-space: nowrap;
+}
+.progress-ring {
+  width: 124px;
+  height: 124px;
+  flex-shrink: 0;
+  position: relative;
+}
+.progress-ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+.ring-center strong {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  line-height: 1;
+  font-weight: 700;
+  color: #f4f4f4;
+}
+.ring-center span {
+  font:
+    11px ui-monospace,
+    monospace;
+  color: #aaa8b0;
+  margin-top: 3px;
+}
+.ring-center small {
+  font-size: 10px;
+  color: #aaa8b0;
+}
+.roadmap-picker {
+  margin: 25px auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid #66646b;
+  border-radius: 11px;
+  background: #262527;
+  width: max-content;
+  max-width: 100%;
+  padding: 4px 10px;
+}
+.roadmap-picker > span {
+  font-size: 15px;
+}
+.roadmap-picker select {
+  background: transparent;
+  color: #e3e1e8;
+  font-size: 14px;
+  border: none;
+  padding: 4px 3px;
+  max-width: 195px;
+  cursor: pointer;
+}
+.roadmap-picker option {
+  background: #262527;
+  color: white;
+}
+.progress-tools {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.progress-tools button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #3c3a40;
+  border-radius: 8px;
+  background: #262527;
+  color: #aaa7b0;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+}
+.progress-tools button:hover {
+  background: #343237;
+  color: #eee;
+}
+.progress-tools svg {
+  width: 17px;
+  height: 17px;
+}
+.progress-tools #roadmap-help {
+  font-size: 13px;
+  font-weight: 600;
+}
+.overlay-toggle {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  display: none;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 13px;
+  border: 1px solid #454249;
+  border-radius: 9px;
+  background: #262527;
+  color: #d5d2db;
+  font-size: 12px;
+  z-index: 5;
+}
+.overlay-toggle > span:first-of-type {
+  color: #aaa7b0;
+  font:
+    11px ui-monospace,
+    monospace;
+}
+.overlay-toggle > span:last-of-type {
+  font-size: 17px;
+}
+.overlay-collapsed .progress-overlay {
+  display: none;
+}
+.overlay-collapsed .overlay-toggle {
+  display: flex;
+}
+.overlay-toggle:hover {
+  background: #333136;
+}
+.activity-card {
+  padding: 15px 14px 17px;
+}
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.calendar-header h2 {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+.calendar-header button {
+  border: none;
+  background: none;
+  color: #b6b2bf;
+  width: 26px;
+  height: 28px;
+  font-size: 23px;
+  line-height: 1;
+}
+.calendar-caption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0 18px;
+  padding: 0 2px;
+  gap: 6px;
+}
+.calendar-caption button {
+  color: #eee;
+  font-size: 12px;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+.calendar-caption span {
+  color: #aaa6b0;
+  font-size: 9px;
+}
+.calendar-weekdays,
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px 3px;
+  text-align: center;
+}
+.calendar-weekdays {
+  font-size: 9px;
+  color: #aaa6b0;
+  margin-bottom: 8px;
+}
+.calendar-days > span {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bdb9c5;
+  font-size: 10px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  margin: 0 auto;
+  width: 32px;
+}
+.calendar-days > span.today {
+  border-color: #9890ec;
+  background: #625dcc55;
+  color: #f5f4fa;
+  box-shadow: 0 0 0 2px #8b81ee15;
+}
+.calendar-days > span.activity {
+  color: #74d6b2;
+  background: #22654c4d;
+  font-weight: 600;
+}
+.calendar-days > span.activity.today {
+  border-color: #9c93ef;
+}
+.streak-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 20px;
+}
+.streak-row > div {
+  border: 1px solid #3c393f;
+  border-radius: 8px;
+  padding: 10px;
+}
+.streak-row > div > span {
+  font-size: 9px;
+  color: #aaa6b0;
+}
+.streak-row strong {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 7px;
+}
+.streak-row small {
+  font-size: 11px;
+  font-weight: 400;
+  color: #b0acb9;
+}
+.streak-row i {
+  font-style: normal;
+  color: #efa000;
+  font-size: 17px;
+}
+.local-progress-note {
+  font-size: 9px;
+  color: #928b9b;
+  text-align: center;
+  margin: 14px 0 0;
+}
+#empty-filter {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #aaa6b0;
+  text-align: center;
+  pointer-events: none;
+}
+.topic-drawer {
+  margin: 0 0 0 auto;
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(720px, 60vw);
+  max-width: 100%;
+  height: 100dvh;
+  max-height: 100dvh;
+  border: 0;
+  border-left: 1px solid #353138;
+  background: #1d1c1e;
+  color: #e7e4ec;
+  padding: 50px 24px 30px;
+  overflow: auto;
+  box-shadow: -8px 0 35px #0003;
+}
+.topic-drawer::backdrop,
+.roadmap-dialog::backdrop {
+  background: #0009;
+}
+.topic-drawer h1 {
+  font-family: var(--font);
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.3;
+  margin: 8px 28px 14px;
+}
+.drawer-close {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  background: none;
+  color: #aaa6b0;
+  font-size: 25px;
+}
+.drawer-count {
+  text-align: center;
+  font:
+    14px ui-monospace,
+    monospace;
+  color: #aaa6b0;
+  margin: 0 0 38px;
+}
+#prerequisite-section h2 {
+  font-family: var(--font);
+  font-size: 15px;
+  color: #bdb8c6;
+  font-weight: 400;
+  text-align: center;
+  margin: 0 0 18px;
+}
+#prerequisite-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+#prerequisite-links button {
+  border: 1px solid #403b47;
+  background: #262527;
+  border-radius: 12px;
+  padding: 18px 15px;
+  color: #e1dce9;
+  flex: 1 1 200px;
+  text-align: left;
+  font-size: 15px;
+  max-width: 300px;
+}
+#prerequisite-links button small {
+  display: block;
+  color: #8e89ce;
+  font-size: 11px;
+  margin-top: 9px;
+  line-height: 1.5;
+}
+.lesson-table-wrap {
+  border: 1px solid #3c393f;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 26px;
+}
+.roadmap-lesson-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  table-layout: fixed;
+}
+.roadmap-lesson-table th {
+  background: #262527;
+  color: #aaa6b0;
+  text-transform: uppercase;
+  letter-spacing: 0.35px;
+  text-align: left;
+  padding: 14px 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.roadmap-lesson-table th:first-child {
+  width: 65px;
+  text-align: center;
+}
+.roadmap-lesson-table th:nth-child(2) {
+  width: 56px;
+  text-align: center;
+}
+.roadmap-lesson-table td {
+  padding: 17px 10px;
+  background: #222123;
+  border-top: 1px solid #343037;
+}
+.roadmap-lesson-table td:first-child,
+.roadmap-lesson-table td:nth-child(2) {
+  text-align: center;
+}
+.roadmap-lesson-table a {
+  line-height: 1.5;
+  color: #e2dfe8;
+}
+.roadmap-lesson-table a:after {
+  content: ' ↗';
+  color: #9891a7;
+  margin-left: 4px;
+}
+.lesson-complete {
+  appearance: none;
+  width: 19px;
+  height: 19px;
+  border: 1.5px solid #6e6978;
+  border-radius: 50%;
+  cursor: pointer;
+  vertical-align: middle;
+  margin: 0;
+  position: relative;
+}
+.lesson-complete:checked {
+  background: #00bb94;
+  border-color: #00bb94;
+}
+.lesson-complete:checked:after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+.lesson-star {
+  background: none;
+  border: 0;
+  color: #c4a540;
+  font-size: 25px;
+  line-height: 1;
+  padding: 0;
+  vertical-align: middle;
+}
+.empty-content-note {
+  font-size: 12px;
+  color: #8f899b;
+  line-height: 1.7;
+  margin-top: 20px;
+  text-align: center;
+}
+.roadmap-dialog {
+  background: #262527;
+  color: #e8e5ed;
+  border: 1px solid #45404c;
+  border-radius: 13px;
+  padding: 25px;
+  max-width: 430px;
+  width: calc(100% - 40px);
+  box-shadow: 0 12px 50px #0005;
+}
+.roadmap-dialog h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin: 0 0 18px;
+}
+.roadmap-dialog p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #b5afc0;
+  margin: 14px 0;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 24px;
+}
+.dialog-button {
+  border: 1px solid #57505f;
+  border-radius: 7px;
+  padding: 9px 14px;
+  background: #34303a;
+  color: #e5e0ed;
+  font-size: 12px;
+}
+.dialog-button.danger {
+  background: #6a2b36;
+  border-color: #87424e;
+}
+#roadmap-notice {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  background: #302c35;
+  color: #ded8e9;
+  padding: 11px 17px;
+  border: 1px solid #51475e;
+  border-radius: 8px;
+  font-size: 12px;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  max-width: calc(100% - 60px);
+  text-align: center;
+}
+#roadmap-notice.visible {
+  opacity: 1;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+@media (max-width: 900px) {
+  .overlay-toggle {
+    display: flex;
+  }
+  .progress-overlay {
+    width: 285px;
+    top: 68px;
+    right: 16px;
+    max-height: calc(100% - 86px);
+  }
+  .overlay-toggle {
+    right: 16px;
+  }
+  .topic-drawer {
+    width: min(600px, 88vw);
+  }
+}
+@media (max-width: 520px) {
+  .topic-drawer {
+    width: 100%;
+    padding: 46px 16px 24px;
+  }
+  .topic-drawer h1 {
+    font-size: 22px;
+  }
+  .progress-overlay {
+    width: 270px;
+  }
+  .progress-count-row {
+    font-size: 10px;
+  }
+  .canvas-controls {
+    left: 12px;
+    bottom: 14px;
+  }
+  .canvas-controls button {
+    width: 34px;
+    height: 34px;
+  }
+  .overlay-toggle {
+    font-size: 11px;
+  }
+  .streak-row > div {
+    padding: 9px;
+  }
+}
+.progress-card {
+  position: relative;
+}
+.hide-overlay {
+  position: absolute;
+  top: 5px;
+  right: 8px;
+  background: none;
+  border: 0;
+  color: #8b8794;
+  width: 24px;
+  height: 22px;
+  font-size: 17px;
+  line-height: 1;
+}
+.hide-overlay:hover {
+  color: #ddd;
+}

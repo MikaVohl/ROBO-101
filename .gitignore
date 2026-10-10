@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Generated previews and tool caches
+artifacts/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+
+# Frontend dependencies and generated production/runtime assets
+node_modules/
+src/robo_101/web/
+web/public/vendor/
+playwright-report/
+test-results/
+*.tsbuildinfo

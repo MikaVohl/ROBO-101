@@ -1,0 +1,5 @@
+<mujoco model="ROBO-101 · Robotics Lab">
+  <include file="environment.xml"/>
+  <include file="arm.xml"/>
+  <include file="car.xml"/>
+</mujoco>

@@ -1,0 +1,4 @@
+<mujoco model="ROBO-101 · Arm Workbench">
+  <include file="environment.xml"/>
+  <include file="arm.xml"/>
+</mujoco>

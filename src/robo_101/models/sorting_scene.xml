@@ -1,0 +1,131 @@
+<mujoco model="ROBO-101 · Reactive Sorting">
+  <compiler angle="radian" autolimits="true" />
+  <option timestep="0.002" integrator="implicitfast" cone="elliptic" iterations="80" />
+  <visual>
+    <global offwidth="1280" offheight="800" />
+    <headlight ambient="0.3 0.3 0.3" diffuse="0.7 0.7 0.7" />
+  </visual>
+  <default>
+    <geom friction="1.5 0.02 0.002" solref="0.008 1" solimp="0.95 0.99 0.001" />
+    <default class="jaw">
+      <joint type="slide" damping="4" armature="0.002" range="0 0.035" />
+      <geom type="box" size="0.009 0.027 0.026" mass="0.035" friction="3 0.05 0.005" condim="6" rgba="0.20 0.22 0.24 1" />
+      <position kp="700" kv="12" ctrlrange="0 0.035" forcerange="-25 25" />
+    </default>
+    <default class="mark">
+      <geom contype="0" conaffinity="0" type="box" rgba="0.20 0.23 0.25 1" />
+    </default>
+    <default class="stack_arm">
+      <joint damping="0.4" armature="0.003" />
+      <geom type="capsule" size="0.033" density="850" rgba="0.66 0.70 0.72 1" />
+      <position kp="2500" kv="45" forcerange="-300 300" />
+    </default>
+  </default>
+  <worldbody>
+    <light pos="0 -1 3" dir="0 0 -1" directional="true" />
+    <geom type="plane" size="1.5 1.5 0.1" rgba="0.10 0.11 0.12 1" />
+    <geom name="stage" type="box" pos="-0.02 0.02 0.018" size="0.48 0.38 0.018" rgba="0.28 0.31 0.33 1" />
+    <geom name="worktop" type="box" pos="-0.02 0.02 0.038" size="0.46 0.36 0.002" rgba="0.40 0.44 0.46 1" />
+    <geom name="mint_bin_floor" class="mark" pos="0.12 -0.08 0.041" size="0.057 0.057 0.001" rgba="0.18 0.75 0.59 1" />
+    <geom type="box" pos="0.060 -0.080 0.047" size="0.003 0.063 0.007" rgba="0.18 0.75 0.59 1" />
+    <geom type="box" pos="0.180 -0.080 0.047" size="0.003 0.063 0.007" rgba="0.18 0.75 0.59 1" />
+    <geom type="box" pos="0.120 -0.140 0.047" size="0.057 0.003 0.007" rgba="0.18 0.75 0.59 1" />
+    <geom type="box" pos="0.120 -0.020 0.047" size="0.057 0.003 0.007" rgba="0.18 0.75 0.59 1" />
+    <geom name="amber_bin_floor" class="mark" pos="0.12 0.08 0.041" size="0.057 0.057 0.001" rgba="0.95 0.65 0.22 1" />
+    <geom type="box" pos="0.060 0.080 0.047" size="0.003 0.063 0.007" rgba="0.95 0.65 0.22 1" />
+    <geom type="box" pos="0.180 0.080 0.047" size="0.003 0.063 0.007" rgba="0.95 0.65 0.22 1" />
+    <geom type="box" pos="0.120 0.020 0.047" size="0.057 0.003 0.007" rgba="0.95 0.65 0.22 1" />
+    <geom type="box" pos="0.120 0.140 0.047" size="0.057 0.003 0.007" rgba="0.95 0.65 0.22 1" />
+    <geom name="coral_bin_floor" class="mark" pos="0.12 0.24 0.041" size="0.057 0.057 0.001" rgba="0.87 0.37 0.31 1" />
+    <geom type="box" pos="0.060 0.240 0.047" size="0.003 0.063 0.007" rgba="0.87 0.37 0.31 1" />
+    <geom type="box" pos="0.180 0.240 0.047" size="0.003 0.063 0.007" rgba="0.87 0.37 0.31 1" />
+    <geom type="box" pos="0.120 0.180 0.047" size="0.057 0.003 0.007" rgba="0.87 0.37 0.31 1" />
+    <geom type="box" pos="0.120 0.300 0.047" size="0.057 0.003 0.007" rgba="0.87 0.37 0.31 1" />
+    <body name="mint_block" pos="0 0 -1">
+      <freejoint name="mint_block_joint" />
+      <geom name="mint_block_geom" type="box" size="0.030 0.030 0.030" mass="0.075" condim="6" rgba="0.18 0.75 0.59 1" />
+    </body>
+    <body name="amber_block" pos="0 0 -1">
+      <freejoint name="amber_block_joint" />
+      <geom name="amber_block_geom" type="box" size="0.030 0.030 0.030" mass="0.075" condim="6" rgba="0.95 0.65 0.22 1" />
+    </body>
+    <body name="coral_block" pos="0 0 -1">
+      <freejoint name="coral_block_joint" />
+      <geom name="coral_block_geom" type="box" size="0.030 0.030 0.030" mass="0.075" condim="6" rgba="0.87 0.37 0.31 1" />
+    </body>
+    <body name="mint_extra" pos="0 0 -1">
+      <freejoint name="mint_extra_joint" />
+      <geom name="mint_extra_geom" type="box" size="0.030 0.030 0.030" mass="0.075" condim="6" rgba="0.18 0.75 0.59 1" />
+    </body>
+    <body name="amber_extra" pos="0 0 -1">
+      <freejoint name="amber_extra_joint" />
+      <geom name="amber_extra_geom" type="box" size="0.030 0.030 0.030" mass="0.075" condim="6" rgba="0.95 0.65 0.22 1" />
+    </body>
+    <body name="coral_extra" pos="0 0 -1">
+      <freejoint name="coral_extra_joint" />
+      <geom name="coral_extra_geom" type="box" size="0.030 0.030 0.030" mass="0.075" condim="6" rgba="0.87 0.37 0.31 1" />
+    </body>
+    <body name="arm_base" pos="-0.38 0.30 0.04" childclass="stack_arm">
+      <geom type="cylinder" size="0.090 0.022" pos="0 0 0.022" rgba="0.22 0.25 0.28 1" />
+      <geom type="cylinder" size="0.067 0.023" pos="0 0 0.062" rgba="0.58 0.63 0.66 1" />
+      <body name="base_link" pos="0 0 0.090">
+        <joint name="base_yaw" axis="0 0 1" range="-3.14 3.14" />
+        <geom fromto="0 0 0 0 0 0.12" size="0.045" rgba="0.27 0.32 0.35 1" />
+        <body name="upper_arm" pos="0 0 0.120">
+          <joint name="shoulder" axis="0 1 0" range="-2.6 1.3" />
+          <geom type="cylinder" size="0.053 0.042" quat="0.70710678 0.70710678 0 0" rgba="0.22 0.25 0.28 1" />
+          <geom fromto="0.025 0 0 0.315 0 0" />
+          <body name="forearm" pos="0.340 0 0">
+            <joint name="elbow" axis="0 1 0" range="0.02 2.95" />
+            <geom type="cylinder" size="0.046 0.036" quat="0.70710678 0.70710678 0 0" rgba="0.24 0.27 0.30 1" />
+            <geom fromto="0.022 0 0 0.278 0 0" size="0.027" />
+            <body name="wrist_roll_link" pos="0.300 0 0">
+              <joint name="wrist_roll" axis="1 0 0" range="-3.14 3.14" />
+              <geom type="cylinder" size="0.033 0.025" quat="0.70710678 0 0.70710678 0" pos="0.010 0 0" rgba="0.28 0.32 0.35 1" />
+              <body name="wrist_pitch_link" pos="0.045 0 0">
+                <joint name="wrist_pitch" axis="0 1 0" range="-2.8 2.8" />
+                <geom type="cylinder" size="0.033 0.028" quat="0.70710678 0.70710678 0 0" rgba="0.25 0.29 0.32 1" />
+                <body name="tool" pos="0.120 0 0">
+                  <joint name="tool_roll" axis="1 0 0" range="-3.14 3.14" />
+                  <geom type="cylinder" size="0.024 0.015" quat="0.70710678 0 0.70710678 0" rgba="0.60 0.65 0.68 1" />
+                  <body name="gripper_carrier" quat="0.7071067812 0 -0.7071067812 0">
+                    <geom name="palm" type="box" size="0.074 0.043 0.023" rgba="0.44 0.49 0.53 1" />
+                    <geom type="box" size="0.060 0.037 0.004" pos="0 0 0.026" rgba="0.18 0.21 0.24 1" />
+                    <geom type="cylinder" size="0.027 0.018" pos="0 0 0.048" rgba="0.40 0.44 0.47 1" />
+                    <geom type="box" size="0.022 0.002 0.003" pos="0 -0.044 0.008" rgba="0.20 0.82 0.66 1" contype="0" conaffinity="0" />
+                    <body name="left_finger" pos="-0.020 0 -0.080" childclass="jaw">
+                      <joint name="finger_left" axis="-1 0 0" />
+                      <geom name="left_pad" />
+                      <geom type="box" size="0.006 0.020 0.030" pos="0 0 0.050" mass="0.025" rgba="0.52 0.57 0.60 1" />
+                    </body>
+                    <body name="right_finger" pos="0.020 0 -0.080" childclass="jaw">
+                      <joint name="finger_right" axis="1 0 0" />
+                      <geom name="right_pad" />
+                      <geom type="box" size="0.006 0.020 0.030" pos="0 0 0.050" mass="0.025" rgba="0.52 0.57 0.60 1" />
+                    </body>
+                    <site name="end_effector" pos="0 0 -0.080" size="0.005" rgba="0.2 0.8 0.6 0" />
+                  </body>
+                  <geom fromto="-0.110 0 0 0 0 0" size="0.019" rgba="0.52 0.58 0.61 1" />
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+  <actuator>
+    <position name="finger_left_cmd" joint="finger_left" class="jaw" />
+    <position name="finger_right_cmd" joint="finger_right" class="jaw" />
+    <position name="base_yaw_cmd" joint="base_yaw" class="stack_arm" ctrlrange="-3.14 3.14" />
+    <position name="shoulder_cmd" joint="shoulder" class="stack_arm" ctrlrange="-2.6 1.3" />
+    <position name="elbow_cmd" joint="elbow" class="stack_arm" ctrlrange="0.02 2.95" />
+    <position name="wrist_roll_cmd" joint="wrist_roll" class="stack_arm" ctrlrange="-3.14 3.14" />
+    <position name="wrist_pitch_cmd" joint="wrist_pitch" class="stack_arm" ctrlrange="-2.8 2.8" />
+    <position name="tool_roll_cmd" joint="tool_roll" class="stack_arm" ctrlrange="-3.14 3.14" />
+  </actuator>
+  <contact>
+    <exclude body1="arm_base" body2="base_link" />
+    <exclude body1="wrist_roll_link" body2="tool" />
+  </contact>
+</mujoco>

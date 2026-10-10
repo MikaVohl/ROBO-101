@@ -1,0 +1,27 @@
+<mujocoinclude>
+  <worldbody>
+    <body name="rover" pos="0.4 -0.65 0.13">
+      <freejoint name="rover_pose"/>
+      <geom name="chassis" type="box" size="0.19 0.12 0.055" mass="2" rgba="0.1 0.75 0.6 1"/>
+      <geom type="box" size="0.09 0.09 0.035" pos="-0.03 0 0.08" mass="0.2" rgba="0.22 0.25 0.3 1"/>
+      <geom type="box" size="0.012 0.07 0.01" pos="0.19 0 0.03" rgba="1 0.8 0.3 1" mass="0.01"/>
+      <site name="rover_heading" pos="0.25 0 0.04" size="0.012" rgba="1 0.8 0.3 1"/>
+      <body name="left_wheel" pos="0 0.17 -0.03">
+        <joint name="wheel_left" type="hinge" axis="0 1 0" damping="0.02" armature="0.01"/>
+        <geom type="cylinder" size="0.1 0.025" quat="0.7071068 0.7071068 0 0" mass="0.25" friction="1.5 0.005 0.0001" rgba="0.12 0.15 0.19 1"/>
+        <geom type="box" size="0.065 0.026 0.008" contype="0" conaffinity="0" mass="0.001" rgba="0.7 0.75 0.8 1"/>
+      </body>
+      <body name="right_wheel" pos="0 -0.17 -0.03">
+        <joint name="wheel_right" type="hinge" axis="0 1 0" damping="0.02" armature="0.01"/>
+        <geom type="cylinder" size="0.1 0.025" quat="0.7071068 0.7071068 0 0" mass="0.25" friction="1.5 0.005 0.0001" rgba="0.12 0.15 0.19 1"/>
+        <geom type="box" size="0.065 0.026 0.008" contype="0" conaffinity="0" mass="0.001" rgba="0.7 0.75 0.8 1"/>
+      </body>
+      <geom name="front_caster" type="sphere" size="0.025" pos="0.15 0 -0.105" mass="0.02" priority="1" friction="0.005 0.001 0.0001" rgba="0.4 0.45 0.5 1"/>
+      <geom name="rear_caster" type="sphere" size="0.025" pos="-0.15 0 -0.105" mass="0.02" priority="1" friction="0.005 0.001 0.0001" rgba="0.4 0.45 0.5 1"/>
+    </body>
+  </worldbody>
+  <actuator>
+    <velocity name="wheel_left_cmd" joint="wheel_left" kv="2" ctrlrange="-12 12" forcerange="-4 4"/>
+    <velocity name="wheel_right_cmd" joint="wheel_right" kv="2" ctrlrange="-12 12" forcerange="-4 4"/>
+  </actuator>
+</mujocoinclude>
